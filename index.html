@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Simple E-commerce Website</title>
+  <style>
+    *
+{
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ccc;
+  }
+
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  main {
+    padding: 20px;
+  }
+
+  .products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .product {
+    border: 1px solid #ccc;
+    margin: 10px; 
+    width: 220px;
+    background-color: white;
+    height: 270px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
+        
+}
+
+
+  .cart {
+    display:none;
+    background-color: #f0f0f0;
+  }
+
+  .cart.show {
+    display: block;
+  }
+
+  #checkoutBtn {
+    margin-top: 10px;
+  }
+  #cartBtn{
+    width: 80px;
+    background-color: transparent;
+    color: white;
+    font-size: 24px;
+    border-radius: 10px;
+  }
+  #cartBtn:hover{
+    cursor: pointer;
+    /* color: red; */
+    background-color: #4f4e4e;
+  }
+  .img_con{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    /* padding: 10px; */
+    padding-top: 40px;
+    height: 60%;
+    background-color: #e3e2e2;
+    /* border-radius: 10px; */
+            /* box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 -3px 3px rgba(0, 0, 0, 0.1); */
+        
+  }
+  .img_con button{
+    background-color: transparent;
+    width: 20px;
+    border: none;
+    margin-right: 15px;
+    margin-left: 10px;
+  }
+  .img_con button:hover{
+    cursor: pointer;
+    background-color:#e3e2e2;
+  }
+  .img_con img
+  {
+    width: 130px;
+  }
+  .card_footer{
+    text-align: center;
+  }
+  .card_footer h5
+  {
+    margin: 0px;
+    margin: 10px 0px;
+  }
+  .card_footer p{
+    margin: 0px;
+    margin-bottom: 10px;
+  }
+  .addToCartBtn{
+    /* color: black; */
+    border-radius: 5px;
+    font-size: large;
+    border: 1px solid black;
+  }
+  .addToCartBtn:hover {
+    cursor: pointer;
+  }
+  .cart_item{
+    display: block;
+    border: 1px solid black;
+    margin: 10px;
+    padding: 20px;
+    width: 500px;
+  }
+  .cart_item span{
+    margin-right: 20px;
+  }
+  .cart_item button{
+    float: right;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Debarko's E-commerce Website</h1>
+    <button id="cartBtn">Cart</button>
+  </header>
+  <main>
+    <div class="products">
+    </div>
+
+    <!-- Cart section -->
+    <div class="cart" id="cart">
+      <h2>Cart</h2>
+
+    </div>
+    <button id="checkoutBtn">Checkout</button>
+</main>
+  <script>
+    async function fetchFn(id)
+{
+    try
+        {
+            const val=await fetch(`https://dummyjson.com/products/${id}`)
+            if(!val.ok)
+            {
+                throw new Error("Request Not Found")
+            }
+            const temp=await val.json()
+            addElements(temp);
+        }
+    catch(error)
+        {
+            console.error(error)
+        }
+}
+let cart_data=[]
+ function addElements(data)
+ {
+    data.elecount=1;
+    const ele=document.createElement("div")
+    ele.classList.add("product")
+    const img_con=document.createElement("div")
+    img_con.classList.add("img_con")
+    const img_lf_btn=document.createElement("button")
+    img_lf_btn.textContent="<<"
+    const img_rt_btn=document.createElement("button")
+    img_rt_btn.textContent=">>"
+    const img=document.createElement("img")
+    img.src=data.images[0]
+    img_con.appendChild(img_lf_btn)
+    img_con.appendChild(img)
+    img_con.appendChild(img_rt_btn)
+    ele.appendChild(img_con)
+
+    const ele_con=document.createElement("div")
+    ele_con.classList.add("card_footer")
+    ele_hed=document.createElement("h5")
+    ele_hed.textContent=data.title
+    ele_price=document.createElement("p")
+    ele_price.textContent=`$ ${data.price}`
+    ele_button=document.createElement("button")
+    ele_button.classList.add("addToCartBtn")
+    ele_button.textContent="Add to Cart"
+    ele_con.appendChild(ele_hed)
+    ele_con.appendChild(ele_price)
+    ele_con.appendChild(ele_button)
+    ele.appendChild(ele_con)
+    
+    document.querySelector(".products").appendChild(ele)
+    img_lf_btn.addEventListener("click",()=>
+ {
+    let temp= data.images.indexOf(img.src)
+    if(temp)
+    {
+        img.src=data.images[temp-1]
+    }
+ })
+    img_rt_btn.addEventListener("click",()=>
+    {
+    let temp= data.images.indexOf(img.src)
+    if(temp<(data.images.length)-1)
+    {
+        img.src=data.images[temp+1]
+    }
+    })
+    ele_button.addEventListener("click",()=>
+    {
+        let i=cart_data.indexOf(data);
+       if(i>-1)
+       {
+        cart_data[i].elecount=cart_data[i].elecount+1
+       }
+       else
+       {
+        cart_data.push(data)
+       }
+    })
+ }
+
+ async function implement()
+ {
+ for(let i=1;i<=100;i++)
+ {
+    await fetchFn(i)
+ }
+ }
+implement()
+document.querySelector("#checkoutBtn").addEventListener("click",()=>
+{
+    let temp=0
+    for(let i of cart_data)
+    {
+        temp=temp+i.price*i.elecount
+    }
+    cart_data=[]
+    alert(`Order placed for $${temp}`)
+    document.querySelector(".cart").innerHTML="<h1>Order Successfully Placed</h1>"
+})
+
+document.querySelector("#cartBtn").addEventListener("click",()=>
+{
+    let temp1=document.querySelector(".products")
+    let temp2=document.querySelector(".cart")
+    if(temp2.style.display==="block"&&temp1.style.display==="none")
+    {
+        temp2.style.display="none"
+        temp1.style.display="flex"
+        temp2.innerHTML=""
+    }
+    else{
+        temp2.style.display="block"
+        temp1.style.display="none"
+        for(let i of cart_data)
+        {
+            addListitems(i,temp2)
+        }
+    }
+})
+
+function addListitems(ip_data,temp2)
+{
+    let new_div=document.createElement("div")
+    new_div.classList.add("cart_item")
+    let item_name=document.createElement("span")
+    let item_price=document.createElement("span")
+    let item_qty=document.createElement("span")
+    let item_btn_reduce=document.createElement("button")
+    item_name.textContent=`${ip_data.title}`
+    item_price.textContent=`Price: ${ip_data.price}`
+    item_qty.textContent=`Quant: ${ip_data.elecount}`
+    item_btn_reduce.textContent=`-`
+    new_div.appendChild(item_name)
+    new_div.appendChild(item_price)
+    new_div.appendChild(item_qty)
+    new_div.appendChild(item_btn_reduce)
+    temp2.appendChild(new_div)
+    item_btn_reduce.addEventListener("click",()=>
+    {
+        let i=find(ip_data)
+        if(i>-1&&cart_data[i].elecount>=1)
+        {
+            cart_data[i].elecount--
+            item_qty.textContent=`Quant: ${cart_data[i].elecount}`
+            if(cart_data[i].elecount==0)
+            {
+            temp2.removeChild(new_div)
+            cart_data.splice(i,1)
+            }
+        }
+    })
+}
+
+function find(ip_data)
+{
+    return cart_data.indexOf(ip_data)
+}
+  </script>
+</body>
+</html>
